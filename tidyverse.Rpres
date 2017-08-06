@@ -1,0 +1,112 @@
+tidyverse
+========================================================
+author: 
+date: 11 August 2017
+autosize: false
+
+
+What is tidyverse?
+========================================================
+- The tidyverse is an R package containing a collection of R packages that work in harmony. 
+- They share the same data representation and programming styles, i.e. API design. 
+
+![](tidyversePackage.png)
+
+
+Installation and loading the package
+========================================================
+
+```{r, eval=FALSE}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+
+```{r, echo=FALSE, message=TRUE}
+library(tidyverse)
+```
+
+Installation and loading the package
+========================================================
+
+Loading the `tidyverse` package only load the **core** `tidyverse` packages: `ggplot2`, `tibble`, `tidyr`, `readr`, `purrr`, and `dplyr`. 
+
+
+
+Workflow
+=======================================================
+
+In a typical data science project looks like: 
+
+![](dataScience.png)
+
+
+Data import
+=======================================================
+- `readr`: for CSV files.
+- `haven`: for SPSS, SAS and Stata files.
+- `readxl`: for MS Excel files.
+
+Note that character variable in the dataset are remain as character, `read.csv()` function automatically convert these variables into factor.
+
+Data tidying
+=======================================================
+- `tidyr`: data tidying 
+    + `gather` function: convert the dataset from wide format to long format.
+    + `spread` function: convert the dataset from long format to wide format.
+-  `tibble`: new type of data frames.
+
+
+Data transformation 
+=======================================================
+- `dplyr`: data manipulation
+
+
+Data visualization  
+=======================================================
+- `ggplot2`
+
+
+
+Main point
+========================================================
+
+## Solve complex problem by **combining simple pieces** that have a **consisitent structure**. 
+
+- combining
+- simple pieces
+- consistent structure
+
+
+Combining
+========================================================
+
+- With assignment, composition or the pipe. `%>%`
+- Function fit best into a pipe when 
+    + The first argument is the "data".
+    + The data is the same type across different functions.
+- When not to use pipe: 
+    + The pipe is longer than ten steps. 
+    + You have multiple input and outputs. 
+    + The relationship is not linear.
+
+
+
+Simple pieces
+========================================================
+
+- Functions that do one thing well and can be understood with minimal context. 
+- Always comment the source code on **why** you written it not **how**.
+
+
+Consistent structure
+========================================================
+
+- Tidy tibbles have variables on columns and cases in rows
+    + Each dataset goes in a tibble. 
+    + Each variable goes in a column.
+- List cols can store richer data structure
+
+
+
+

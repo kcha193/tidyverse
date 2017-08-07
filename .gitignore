@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-CSV
-data_vis.png
-model_vis.png
+CSV/
+*_vis.png
+word_screenshot.png
+

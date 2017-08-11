@@ -1,13 +1,13 @@
-The philosophy of the tidyverse
+Tidyverse
 ========================================================
-author: 
+author: Blake Seers and Kevin Chang
 date: 11 August 2017
 autosize: false
 
 What is the tidyverse?
 ========================================================
 
-The tidyverse is a collection of **R** packages that are all based on one simple,
+The tidyverse (<http://www.tidyverse.org/>) is a collection of **R** packages that are all based on one simple,
 underlying philosophy to data science:
 
 ## Solve a complex problem by **combining simple pieces** that have a **consisitent structure**.
@@ -18,7 +18,8 @@ The collection of tidyverse packages:
 - share the same data representation and programming styles, i.e. API design. 
 - work in harmony
 
-![](tidyversePackage.PNG)
+<div align="center">
+<img src="tidyversePackage.PNG" width=500>
 
 The collection of tidyverse packages:
 ========================================================
@@ -39,22 +40,100 @@ Remember: These packages work together to solve a complex problem by **combining
 
 But how?
 
-Combining...
+Simple pieces...
 ========================================================
 
+- Functions:
+    + do one thing well: return a *value* or have a *side-effect*. 
+    + can be understood in isolation with minimal context: *type-stable*
+- Always comment your code:
+    + why did you write this piece of code --- not how it works.
+
+
+Side-effect
+========================================================
+
+- changing the state of the world.
+- Examples: 
+      + `<-`
+      + `print()`
+      + `read.csv`
+
+
+Simple pieces...
+========================================================
+
+- Functions:
+    + do one thing well: return a *value* or have a *side-effect*. 
+    + can be understood in isolation with minimal context: *type-stable*
+- Always comment your code:
+    + why did you write this piece of code --- not how it works.
+
+
+`sapply()` and `[` functions are type-unstable
+=======================================================
+- `sapply()` can return vector, matrix or list depends on the dimension of the ouputs. 
+- `[` can return vector or data frame. 
+
+
+...Combining...
+========================================================
+
+- With *assignment*, *composition* or the *pipe* (`%>%`) operator
+
+
+Assignment 
+==========================================================
+```{r, eval = FALSE}
+a1 <- group_by(flights, year, month, day)
+a2 <- select(a1, arr_delay, dep_delay)
+a3 <- summarise(a2,
+  arr = mean(arr_delay, na.rm = TRUE),
+  dep = mean(dep_delay, na.rm = TRUE))
+a4 <- filter(a3, arr > 30 | dep > 30)
+
+```
+
+Composition 
+==========================================================
+```{r, eval = FALSE}
+filter(
+  summarise(
+    select(
+      group_by(flights, year, month, day),
+      arr_delay, dep_delay
+    ),
+    arr = mean(arr_delay, na.rm = TRUE),
+    dep = mean(dep_delay, na.rm = TRUE)
+  ),
+  arr > 30 | dep > 30
+)
+```
+
+Piping 
+==========================================================
+```{r, eval = FALSE}
+flights %>%
+  group_by(year, month, day) %>%
+  select(arr_delay, dep_delay) %>%
+  summarise(
+    arr = mean(arr_delay, na.rm = TRUE),
+    dep = mean(dep_delay, na.rm = TRUE)
+  ) %>%
+  filter(arr > 30 | dep > 30)
+```
+
+...Combining...
+========================================================
 - With assignment, composition or the pipe (`%>%`) operator
 - Function fit best into a pipe when 
     + The first argument is the "data".
     + The data is the same type across different functions.
+- Pipe operator is not useful when
+    + The intermediate values are need to be stored.
+    + The intermediate step takes long time to compute.
+    + Relationship between functions is not linear. 
 
-...Simple pieces...
-========================================================
-
-- Functions:
-    + do one thing well 
-    + can be understood with minimal context.
-- Always comment your code:
-    + why did you write this piece of code --- not how it works.
 
 ...Consistent structure.
 ========================================================
@@ -63,7 +142,28 @@ Combining...
     + Each dataset goes in a tibble.
     + Each column represents a variable.
     + Each row represents an observation.
-- Columns are `list`s that can store richer data structure.
+- Columns are `list`s that can store richer data structure, i.e. `list-cols`.
+
+
+Tibble
+==========================================================
+```{r}
+library(nycflights13)
+flights
+```
+
+
+Summary
+========================================================
+To solve a complex problem by **combining simple pieces** that have a **consisitent structure**.
+
+Four basic principles to a tidy API:
+
+  1.  Reuse existing data structures.
+  2.  Compose simple functions with the *pipe*.
+  3.  Embrace *functional programming*.
+  4.  Design for humans.
+
 
 Workflow of a typical data science project
 =======================================================
@@ -74,27 +174,44 @@ Workflow of a typical data science project
 Data import
 =======================================================
 
-- `readr`: for CSV files.
-- `haven`: for SPSS, SAS and Stata files.
-- `readxl`: for MS Excel files.
+- `readr`: for CSV files
+- `haven`: for SPSS, SAS and Stata files
+- `readxl`: for MS Excel files
 
 Note that character variables in the dataset remain as a character variables. The  `read.csv()` function automatically converts these variables into a factor variable.
 
 Data tidying
 =======================================================
 - `tidyr`: data tidying 
-    + `gather` function: convert the dataset from wide format to long format.
-    + `spread` function: convert the dataset from long format to wide format.
+    + `gather()` function: convert the dataset from wide format to long format.
+    + `spread()` function: convert the dataset from long format to wide format.
 -  `tibble`: new type of data frames.
 
 Data transformation 
 =======================================================
 - `dplyr`: data manipulation
-
+- `forcats`: for factors
+- `stringr`: for strings
+- `lubridate`: for date/times
 
 Data visualization
 =======================================================
 - `ggplot2`
+
+```{r, echo = FALSE, fig.width=12, fig.align='center'}
+by_tailnum <- group_by(flights, tailnum)
+delay <- summarise(by_tailnum,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE))
+delay <- filter(delay, count > 20, dist < 2000)
+
+# Interestingly, the average delay is only slightly related to the
+# average distance flown by a plane.
+ggplot(delay, aes(dist, delay)) +
+  geom_point(aes(size = count), alpha = 1/2) +
+  geom_smooth()
+```
 
 Example
 =======================================================
@@ -155,3 +272,12 @@ Example --- Communicate
 
 <div align="center">
 <img src="word_screenshot.png" width=1000>
+
+
+Some Resources
+=======================================================
+
+- **R for Data Science** by Hadley Wickham and Garrett Grolemund. <http://r4ds.had.co.nz/>
+
+
+
